@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>🌍 Country-State-City Selector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --container-color: #f9f9f9;
+      --text-color: #222222;
+      --accent-color: #4caf50;
+      --input-bg: #eeeeee;
+      --hover-color: #dddddd;
+    }
+
+    html[data-theme='dark'] {
+      --bg-color: #121212;
+      --container-color: #1e1e1e;
+      --text-color: #ffffff;
+      --input-bg: #2a2a2a;
+      --hover-color: #333;
+    }
+
+    * {
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--container-color);
+      padding: 35px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 25px;
+      text-align: center;
+      color: var(--accent-color);
+    }
+
+    label {
+      font-weight: 500;
+      margin: 10px 0 5px;
+      display: block;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    select:focus, input[type="text"]:focus {
+      border-color: var(--accent-color);
+      outline: none;
+      background-color: #fff;
+    }
+
+    html[data-theme='dark'] select:focus,
+    html[data-theme='dark'] input[type="text"]:focus {
+      background-color: #1c1c1c;
+    }
+
+    #searchResults {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #searchResults li {
+      background-color: var(--input-bg);
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #searchResults li:hover {
+      background-color: var(--hover-color);
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-color);
+    }
+
+    .toggle-btn:hover {
+      color: var(--accent-color);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="toggle-btn" id="themeToggle" title="Toggle Light/Dark">🌙</button>
+    <h2>🌍 Country-State-City</h2>
+
+    <label for="countrySelect">🌐 Country</label>
+    <select id="countrySelect">
+      <option value="">Select Country</option>
+    </select>
+
+    <label for="stateSelect">🏛️ State</label>
+    <select id="stateSelect">
+      <option value="">Select State</option>
+    </select>
+
+    <label for="citySelect">🏙️ City</label>
+    <select id="citySelect">
+      <option value="">Select City</option>
+    </select>
+
+    <label for="citySearch">🔍 Search City</label>
+    <input type="text" id="citySearch" placeholder="Type city name..." />
+    <ul id="searchResults"></ul>
+  </div>
+
+ <script>
+    const apiBase = 'http://127.0.0.1:8000/api';
+
+    async function loadCountries() {
+      const res = await fetch(`${apiBase}/countries/`);
+      const countries = await res.json();
+      const select = document.getElementById('countrySelect');
+      countries.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.iso2;
+        option.textContent = c.name;
+        select.appendChild(option);
+      });
+    }
+
+    async function loadStates(countryIso2) {
+      const res = await fetch(`${apiBase}/countries/${countryIso2}/states/`);
+      const states = await res.json();
+      const select = document.getElementById('stateSelect');
+      select.innerHTML = '<option value="">Select State</option>';
+      states.forEach(s => {
+        const option = document.createElement('option');
+        option.value = s.id;
+        option.textContent = s.name;
+        select.appendChild(option);
+      });
+    }
+
+    async function loadCities(stateId) {
+      const res = await fetch(`${apiBase}/states/${stateId}/cities/`);
+      const cities = await res.json();
+      const select = document.getElementById('citySelect');
+      select.innerHTML = '<option value="">Select City</option>';
+      cities.forEach(c => {
+        const option = document.createElement('option');
+        option.textContent = c.name;
+        select.appendChild(option);
+      });
+    }
+
+    async function searchCities(query) {
+      const res = await fetch(`${apiBase}/cities/?search=${query}`);
+      const cities = await res.json();
+      const list = document.getElementById('searchResults');
+      list.innerHTML = '';
+      cities.forEach(city => {
+        const li = document.createElement('li');
+        li.textContent = city.name;
+        list.appendChild(li);
+      });
+    }
+
+    // Event Listeners
+    document.getElementById('countrySelect').addEventListener('change', function () {
+      if (this.value) loadStates(this.value);
+    });
+
+    document.getElementById('stateSelect').addEventListener('change', function () {
+      if (this.value) loadCities(this.value);
+    });
+
+    document.getElementById('citySearch').addEventListener('input', function () {
+      const query = this.value.trim();
+      if (query.length > 2) {
+        searchCities(query);
+      } else {
+        document.getElementById('searchResults').innerHTML = '';
+      }
+    });
+
+    // Theme Toggle
+    const toggleBtn = document.getElementById('themeToggle');
+    const htmlTag = document.documentElement;
+
+    function setTheme(mode) {
+      htmlTag.setAttribute('data-theme', mode);
+      toggleBtn.textContent = mode === 'dark' ? '🌙' : '☀️';
+      localStorage.setItem('theme', mode);
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      const current = htmlTag.getAttribute('data-theme');
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    // Init theme
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+
+    // Init countries
+    loadCountries();
+  </script>
+</body>
+</html>
