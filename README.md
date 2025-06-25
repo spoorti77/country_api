@@ -118,7 +118,7 @@ This project is licensed under the MIT License.
 
 ---
 ## Screenshot
-![Live App](docs/screenshot.png)
+![Live App](docs/ss.png)
 
 ## 🙋‍♀️ Maintainer
 
