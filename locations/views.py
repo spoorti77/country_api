@@ -39,3 +39,8 @@ class CitySearchView(ListAPIView):
         if search:
             return City.objects.filter(name__icontains=search).order_by('name')
         return City.objects.none()
+
+from django.shortcuts import render
+
+def frontend_view(request):
+    return render(request, 'index.html')

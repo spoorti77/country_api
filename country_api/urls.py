@@ -35,7 +35,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('/', include('locations.urls')),
+    path('api/', include('locations.urls')),
 
     # Swagger and Redoc URLs
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
