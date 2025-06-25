@@ -15,11 +15,6 @@ A free and open-source API built with Django & Django REST Framework that provid
 
 ---
 
-## 🚀 Live API (optional)
-
-You can deploy this API publicly using [Render](https://render.com/), [Railway](https://railway.app/) or [Vercel + Django](https://vercel.com/docs/).
-
----
 
 ## 🔧 Setup Instructions
 
