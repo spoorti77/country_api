@@ -117,6 +117,8 @@ country_api/
 This project is licensed under the MIT License.
 
 ---
+## Screenshot
+![Live App](docs/screenshot.png)
 
 ## 🙋‍♀️ Maintainer
 
@@ -124,8 +126,6 @@ This project is licensed under the MIT License.
 Python Django Developer
 [GitHub Profile](https://github.com/spoorti77)
 
----
 
-```
 
 
